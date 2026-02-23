@@ -20,9 +20,6 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
     const smoothX = useSpring(mouseX, springConfig)
     const smoothY = useSpring(mouseY, springConfig)
 
-    // Transform values for different layers (parallax depth)
-    const bgX = useTransform(smoothX, [-500, 500], [15, -15])
-    const bgY = useTransform(smoothY, [-500, 500], [15, -15])
 
     // New Background Layers (Parallax Depth)
     const layer000X = useTransform(smoothX, [-500, 500], [15, -15])
@@ -57,8 +54,6 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
         if (!ctx) return
 
         let animationId: number
-        let currentX = 0
-        let currentY = 0
 
         const resize = () => {
             canvas.width = window.innerWidth

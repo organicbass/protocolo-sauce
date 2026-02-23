@@ -51,7 +51,7 @@ export default function LabPage() {
       }
     }
     preload()
-  }, [])
+  }, [loadTrack])
 
   const handleStart = () => {
     initContext()
