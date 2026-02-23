@@ -201,8 +201,8 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
                         src={Img000}
                         alt="Background Depth Layer 000"
                         fill
-                        className="object-cover object-center opacity-70 scale-80"
-                        quality={100}
+                        className="object-cover object-center opacity-70 scale-90 tablet:scale-80"
+                        priority
                     />
                 </motion.div>
 
@@ -215,8 +215,8 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
                         src={Img001}
                         alt="Background Depth Layer 001"
                         fill
-                        className="object-cover object-center"
-                        quality={100}
+                        className="object-cover object-center scale-110 tablet:scale-100"
+                        priority
                     />
                 </motion.div>
 
@@ -230,8 +230,7 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
                         alt="Human Sauce Lab Character"
                         fill
                         priority
-                        className="object-cover object-center scale-105"
-                        quality={100}
+                        className="object-cover object-center scale-[1.2] tablet:scale-105"
                     />
                     <div className="absolute inset-0 bg-black/30" />
                 </motion.div>
@@ -245,7 +244,7 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
             </div>
 
             {/* Hero Content - Positioned on the RIGHT, but text LEFT-ALIGNED */}
-            <div className="relative z-[50] h-full w-full flex items-center justify-end px-6 tablet:px-12 desktop:px-32 pr-[100px] desktop:pr-[228px] pointer-events-none">
+            <div className="relative z-[50] h-full w-full flex items-center justify-center tablet:justify-end px-6 tablet:px-12 desktop:px-32 pr-6 tablet:pr-[100px] desktop:pr-[228px] pointer-events-none">
 
                 {/* Glass Cube Mouse Cursor */}
                 <motion.div
@@ -265,7 +264,7 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
                     transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
                 >
                     {/* Heading */}
-                    <h1 className="font-heading text-4xl mobile:text-5xl tablet:text-6xl desktop:text-[77px] leading-[0.9] tracking-tighter text-white uppercase mb-6 drop-shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+                    <h1 className="font-heading text-3xl mobile:text-4xl tablet:text-6xl desktop:text-[77px] leading-[0.9] tracking-tighter text-white uppercase mb-6 drop-shadow-[0_0_15px_rgba(0,0,0,0.5)]">
                         DOMINE AS<br />
                         FERRAMENTAS<br />
                         <span className="text-neon-yellow">DO MERCADO ATUAL</span>

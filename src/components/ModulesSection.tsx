@@ -211,8 +211,8 @@ export default function ModulesSection({ onNext, onModuleClick }: ModulesSection
                 <Image
                     src={Img003}
                     alt="Background Character"
-                    className="absolute opacity-50"
-                    style={{ top: '150px', right: '200px', maxHeight: '100%', width: 'auto' }}
+                    className="absolute opacity-50 object-cover tablet:object-none"
+                    style={{ top: '150px', right: '0px', tablet: { right: '200px' }, maxHeight: '100%', width: 'auto' } as any}
                     width={800}
                     height={1200}
                     priority
@@ -267,7 +267,7 @@ export default function ModulesSection({ onNext, onModuleClick }: ModulesSection
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.7 }}
-                        className="mt-6 font-sans font-light text-white/50 max-w-xl text-sm tablet:text-base desktop:text-[18px] leading-relaxed"
+                        className="mt-6 font-sans font-light text-white/50 max-w-xl text-xs tablet:text-base desktop:text-[18px] leading-relaxed"
                     >
                         A estrutura passo a passo para dominar a criação com IA. Da escolha da ferramenta única até a automação do seu processo.
                     </motion.p>
