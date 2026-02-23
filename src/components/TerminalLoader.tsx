@@ -49,7 +49,7 @@ export default function TerminalLoader({ onComplete }: TerminalLoaderProps) {
         }, 30)
 
         return () => clearInterval(interval)
-    }, [onComplete])
+    }, [onComplete, playTrack, initContext])
 
     return (
         <motion.section

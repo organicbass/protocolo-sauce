@@ -1,8 +1,7 @@
 'use client'
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import { useEffect, useState, useRef } from 'react'
-import Image from 'next/image'
-import { Shield, Zap, Target, BarChart3, Binary, Cpu } from 'lucide-react'
+import { Zap, Target, Cpu } from 'lucide-react'
 import GlassCube from './GlassCube'
 
 const modules = [
