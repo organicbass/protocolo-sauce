@@ -1,6 +1,7 @@
 'use client'
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import { useEffect, useState, useRef } from 'react'
+import Image from 'next/image'
 import { Zap, Target, Cpu } from 'lucide-react'
 import GlassCube from './GlassCube'
 
@@ -206,11 +207,14 @@ export default function ModulesSection({ onNext, onModuleClick }: ModulesSection
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.8, duration: 1.5, ease: 'easeOut' }}
             >
-                <img
+                <Image
                     src={`/003.png?v=${imageVersion}`}
                     alt="Background Character"
                     className="absolute opacity-50"
                     style={{ top: '150px', right: '200px', maxHeight: '100%', width: 'auto' }}
+                    width={800}
+                    height={1200}
+                    priority
                 />
             </motion.div>
 

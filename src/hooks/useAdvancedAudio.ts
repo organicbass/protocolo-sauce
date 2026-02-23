@@ -1,5 +1,5 @@
 'use client'
-import { useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 
 /**
  * Advanced Audio Manager for multi-track playback, 
@@ -13,7 +13,7 @@ export default function useAdvancedAudio() {
     // Buffers cache
     const buffersRef = useRef<Map<string, AudioBuffer>>(new Map())
 
-    const initContext = () => {
+    const initContext = useCallback(() => {
         if (!audioContextRef.current) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)()
@@ -22,17 +22,29 @@ export default function useAdvancedAudio() {
         if (audioContextRef.current.state === 'suspended') {
             audioContextRef.current.resume()
         }
-    }
+    }, [])
 
-    const loadTrack = async (name: string, url: string) => {
+    const loadTrack = useCallback(async (name: string, url: string) => {
         if (!audioContextRef.current) initContext()
         const response = await fetch(url)
         const arrayBuffer = await response.arrayBuffer()
         const audioBuffer = await audioContextRef.current!.decodeAudioData(arrayBuffer)
         buffersRef.current.set(name, audioBuffer)
-    }
+    }, [initContext])
 
-    const playTrack = (name: string, loop: boolean = true) => {
+    const stopTrack = useCallback((name: string, fadeOut: number = 0.5) => {
+        const track = tracksRef.current.get(name)
+        if (track && track.source) {
+            const ctx = audioContextRef.current!
+            track.gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + fadeOut)
+            setTimeout(() => {
+                track.source?.stop()
+                tracksRef.current.delete(name)
+            }, fadeOut * 1000)
+        }
+    }, [])
+
+    const playTrack = useCallback((name: string, loop: boolean = true) => {
         const ctx = audioContextRef.current
         if (!ctx) return
 
@@ -58,35 +70,23 @@ export default function useAdvancedAudio() {
         source.start(0)
 
         tracksRef.current.set(name, { source, gain: gainNode, filter: filterNode })
-    }
+    }, [stopTrack])
 
-    const stopTrack = (name: string, fadeOut: number = 0.5) => {
-        const track = tracksRef.current.get(name)
-        if (track && track.source) {
-            const ctx = audioContextRef.current!
-            track.gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + fadeOut)
-            setTimeout(() => {
-                track.source?.stop()
-                tracksRef.current.delete(name)
-            }, fadeOut * 1000)
-        }
-    }
-
-    const setFilter = (name: string, frequency: number, rampTime: number = 1) => {
+    const setFilter = useCallback((name: string, frequency: number, rampTime: number = 1) => {
         const track = tracksRef.current.get(name)
         if (track) {
             const ctx = audioContextRef.current!
             track.filter.frequency.exponentialRampToValueAtTime(frequency, ctx.currentTime + rampTime)
         }
-    }
+    }, [])
 
-    const setVolume = (name: string, volume: number, rampTime: number = 1) => {
+    const setVolume = useCallback((name: string, volume: number, rampTime: number = 1) => {
         const track = tracksRef.current.get(name)
         if (track) {
             const ctx = audioContextRef.current!
             track.gain.gain.exponentialRampToValueAtTime(Math.max(volume, 0.0001), ctx.currentTime + rampTime)
         }
-    }
+    }, [])
 
     return {
         initContext,
