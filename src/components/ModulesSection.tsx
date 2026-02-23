@@ -208,7 +208,7 @@ export default function ModulesSection({ onNext, onModuleClick }: ModulesSection
                 transition={{ delay: 0.8, duration: 1.5, ease: 'easeOut' }}
             >
                 <Image
-                    src={`/003.png?v=${imageVersion}`}
+                    src={`/Public/003.png?v=${imageVersion}`}
                     alt="Background Character"
                     className="absolute opacity-50"
                     style={{ top: '150px', right: '200px', maxHeight: '100%', width: 'auto' }}
