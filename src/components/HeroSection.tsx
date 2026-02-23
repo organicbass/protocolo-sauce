@@ -2,6 +2,9 @@
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
+import HeroImg from '@/assets/Hero.png'
+import Img000 from '@/assets/000.png'
+import Img001 from '@/assets/001.png'
 import GlassCube from './GlassCube'
 
 interface HeroSectionProps {
@@ -195,7 +198,7 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
                     style={{ x: layer000X, y: layer000Y }}
                 >
                     <Image
-                        src={`/000.png?v=${imageVersion}`}
+                        src={Img000}
                         alt="Background Depth Layer 000"
                         fill
                         className="object-cover object-center opacity-70 scale-80"
@@ -209,7 +212,7 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
                     style={{ x: layer001X, y: layer001Y }}
                 >
                     <Image
-                        src={`/001.png?v=${imageVersion}`}
+                        src={Img001}
                         alt="Background Depth Layer 001"
                         fill
                         className="object-cover object-center"
@@ -223,7 +226,7 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
                     style={{ x: charX, y: charY }}
                 >
                     <Image
-                        src={`/Hero.png?v=${imageVersion}`}
+                        src={HeroImg}
                         alt="Human Sauce Lab Character"
                         fill
                         priority
