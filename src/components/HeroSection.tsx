@@ -195,7 +195,7 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
                     style={{ x: layer000X, y: layer000Y }}
                 >
                     <Image
-                        src={`/Public/000.png?v=${imageVersion}`}
+                        src={`/000.png?v=${imageVersion}`}
                         alt="Background Depth Layer 000"
                         fill
                         className="object-cover object-center opacity-70 scale-80"
@@ -209,7 +209,7 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
                     style={{ x: layer001X, y: layer001Y }}
                 >
                     <Image
-                        src={`/Public/001.png?v=${imageVersion}`}
+                        src={`/001.png?v=${imageVersion}`}
                         alt="Background Depth Layer 001"
                         fill
                         className="object-cover object-center"
@@ -223,7 +223,7 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
                     style={{ x: charX, y: charY }}
                 >
                     <Image
-                        src={`/Public/Hero.png?v=${imageVersion}`}
+                        src={`/Hero.png?v=${imageVersion}`}
                         alt="Human Sauce Lab Character"
                         fill
                         priority
