@@ -1,0 +1,22 @@
+{
+  "themeName": "Human Sauce Lab - Single Page Experience",
+  "tokens": {
+    "colors": {
+      "background": "0 0% 0%",
+      "foreground": "0 0% 100%",
+      "primary": "66 84% 53%",
+      "primary-foreground": "0 0% 0%",
+      "secondary": "65 85% 53%",
+      "accent": "37 58% 66%",
+      "muted": "0 0% 86%"
+    },
+    "borderRadius": "0px",
+    "fontFamily": {
+      "heading": "Cook Conthic, sans-serif",
+      "sans": "Montserrat, sans-serif"
+    },
+    "transitions": {
+      "pageSwap": "0.8s cubic-bezier(0.85, 0, 0.15, 1)"
+    }
+  }
+}
