@@ -274,9 +274,6 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
                     >
                         SAIBA MAIS
                     </button>
-                    <div className="mt-20 opacity-10">
-                        <span className="text-[10px] text-white tracking-[0.5em] uppercase">Protocolo Sauce</span>
-                    </div>
                 </div>
             </div>
 
