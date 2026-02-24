@@ -257,7 +257,7 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
                 </div>
 
                 {/* Text Content - strictly below without overlap */}
-                <div className="w-full px-6 py-12 flex flex-col items-center text-center bg-black -translate-y-[110px]">
+                <div className="w-full px-6 py-12 flex flex-col items-center text-center bg-black -translate-y-[135px]">
                     <div className="w-12 h-[2px] bg-neon-green mb-8" />
                     <h1 className="font-heading text-[52px] leading-[0.85] tracking-tighter text-white uppercase mb-8">
                         DOMINE AS<br />
