@@ -244,20 +244,21 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
                 </div>
             </div>
             {/* MOBILE VIEW (< 810px) */}
-            <div className="flex tablet:hidden flex-col w-full bg-black">
-                {/* Image Header - Full width, original colors */}
-                <div className="w-full relative h-[450px]">
+            <div className="flex tablet:hidden flex-col w-full min-h-screen bg-black relative overflow-x-hidden">
+                {/* Image Background - "Free" version */}
+                <div className="absolute top-0 left-0 w-full h-[550px] z-0">
                     <Image
                         src={`/Herocelular.png?v=${imageVersion}`}
                         alt="Hero Mobile"
                         fill
-                        className="object-cover object-top translate-y-[10px]"
+                        className="object-cover object-top"
                         priority
                     />
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black" />
                 </div>
 
-                {/* Text Content - strictly below without overlap */}
-                <div className="w-full px-6 py-12 flex flex-col items-center text-center bg-black -translate-y-[135px]">
+                {/* Text Content - overlaid and shifted up */}
+                <div className="relative z-10 w-full px-6 pt-[440px] pb-12 flex flex-col items-center text-center -translate-y-[145px]">
                     <div className="w-12 h-[2px] bg-neon-green mb-8" />
                     <h1 className="font-heading text-[52px] leading-[0.85] tracking-tighter text-white uppercase mb-8">
                         DOMINE AS<br />
