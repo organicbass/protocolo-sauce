@@ -1,7 +1,7 @@
 'use client'
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import { useEffect, useState, useRef } from 'react'
-import { Shield, Zap, Target, BarChart3, Binary, Cpu } from 'lucide-react'
+import { Shield, Zap, Target, BarChart3, Binary, Cpu, Instagram, Youtube } from 'lucide-react'
 import GlassCube from './GlassCube'
 
 const modules = [
@@ -238,16 +238,43 @@ export default function ModulesSection({ onNext, onModuleClick }: ModulesSection
                 </motion.div>
 
                 <motion.div className="relative z-10 max-w-7xl mx-auto -translate-y-[10px]" style={{ x: containerX, y: containerY }}>
-                    <div className="mb-12 flex flex-col items-start text-left">
-                        <motion.div className="flex items-center gap-4 mb-4">
-                            <div className="w-12 h-[2px] bg-neon-green" />
-                            <span className="font-sans text-xs text-neon-green font-bold uppercase tracking-[0.4em]">Protocolo Sauce</span>
-                        </motion.div>
-                        <h2 className="font-heading text-7xl leading-none text-white uppercase tracking-tighter">MÓDULOS INICIAIS</h2>
-                        <p className="mt-6 font-sans font-light text-white/50 max-w-xl text-base leading-relaxed">
-                            A estrutura passo a passo para dominar a criação com IA. Da escolha da ferramenta única até a automação do seu processo.
-                        </p>
+                    <div className="mb-12 flex justify-between items-end">
+                        <div className="flex flex-col items-start text-left">
+                            <motion.div className="flex items-center gap-4 mb-4">
+                                <div className="w-12 h-[2px] bg-neon-green" />
+                                <span className="font-sans text-xs text-neon-green font-bold uppercase tracking-[0.4em]">Protocolo Sauce</span>
+                            </motion.div>
+                            <h2 className="font-heading text-7xl leading-none text-white uppercase tracking-tighter flex gap-[0.1em]">
+                                {"MÓDULOS INICIAIS".split('').map((char, i) => (
+                                    <motion.span
+                                        key={i}
+                                        className="inline-block"
+                                        whileHover={{ scale: 1.3, color: '#adec19', y: -5 }}
+                                        transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                                    >
+                                        {char === ' ' ? '\u00A0' : char}
+                                    </motion.span>
+                                ))}
+                            </h2>
+                        </div>
+                        <div className="flex items-center gap-4 mb-2">
+                            <a href="https://www.instagram.com/humansauce.lab/" target="_blank" rel="noopener noreferrer"
+                                className="group relative p-2 border border-neon-green/30 text-neon-green hover:bg-neon-green hover:text-black transition-all duration-300">
+                                <Instagram size={24} className="relative z-10" />
+                                <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-neon-green opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-neon-green opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </a>
+                            <a href="https://www.youtube.com/@HumanSauceLab" target="_blank" rel="noopener noreferrer"
+                                className="group relative p-2 border border-neon-green/30 text-neon-green hover:bg-neon-green hover:text-black transition-all duration-300">
+                                <Youtube size={24} className="relative z-10" />
+                                <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-neon-green opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-neon-green opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </a>
+                        </div>
                     </div>
+                    <p className="mb-10 font-sans font-light text-white/50 max-w-xl text-base leading-relaxed">
+                        A estrutura passo a passo para dominar a criação com IA. Da escolha da ferramenta única até a automação do seu processo.
+                    </p>
 
                     <div className="grid grid-cols-3 gap-2">
                         {modules.map(renderModuleCard)}
@@ -261,7 +288,7 @@ export default function ModulesSection({ onNext, onModuleClick }: ModulesSection
                         <span className="font-sans text-[10px] text-white/20 uppercase tracking-[0.5em]">H.S.L PROTOCOLO</span>
                     </div>
                     <div className="mt-2 flex justify-center pb-12">
-                        <button onClick={onNext} className="group relative px-10 py-4 border border-neon-yellow/30 text-neon-yellow font-sans font-bold uppercase tracking-[0.3em] hover:bg-neon-yellow hover:text-black hover:border-neon-yellow transition-all duration-500 overflow-hidden">
+                        <button onClick={onNext} className="group relative px-10 py-4 border border-neon-yellow/30 text-neon-yellow font-sans font-bold uppercase tracking-[0.3em] hover:bg-neon-yellow hover:text-black hover:border-neon-yellow transition-all duration-500 overflow-hidden animate-shimmer">
                             <span className="relative z-10 text-[14px]">PARA QUEM É O PROTOCOLO ?</span>
                             <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-neon-yellow" />
                             <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-neon-yellow" />
@@ -283,16 +310,37 @@ export default function ModulesSection({ onNext, onModuleClick }: ModulesSection
                 </motion.div>
 
                 <motion.div className="relative z-10 max-w-7xl mx-auto -translate-y-[10px]" style={{ x: containerX, y: containerY }}>
-                    <div className="mb-12 flex flex-col items-start text-left">
-                        <motion.div className="flex items-center gap-4 mb-4">
-                            <div className="w-12 h-[2px] bg-neon-green" />
-                            <span className="font-sans text-xs text-neon-green font-bold uppercase tracking-[0.4em]">Protocolo Sauce</span>
-                        </motion.div>
-                        <h2 className="font-heading text-6xl leading-none text-white uppercase tracking-tighter">MÓDULOS INICIAIS</h2>
-                        <p className="mt-6 font-sans font-light text-white/50 max-w-xl text-base leading-relaxed">
-                            A estrutura passo a passo para dominar a criação com IA. Da escolha da ferramenta única até a automação do seu processo.
-                        </p>
+                    <div className="mb-12 flex justify-between items-end">
+                        <div className="flex flex-col items-start text-left">
+                            <motion.div className="flex items-center gap-4 mb-4">
+                                <div className="w-12 h-[2px] bg-neon-green" />
+                                <span className="font-sans text-xs text-neon-green font-bold uppercase tracking-[0.4em]">Protocolo Sauce</span>
+                            </motion.div>
+                            <h2 className="font-heading text-6xl leading-none text-white uppercase tracking-tighter flex gap-[0.1em]">
+                                {"MÓDULOS INICIAIS".split('').map((char, i) => (
+                                    <motion.span
+                                        key={i}
+                                        className="inline-block"
+                                        whileHover={{ scale: 1.3, color: '#adec19', y: -5 }}
+                                        transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                                    >
+                                        {char === ' ' ? '\u00A0' : char}
+                                    </motion.span>
+                                ))}
+                            </h2>
+                        </div>
+                        <div className="flex items-center gap-4 mb-2">
+                            <a href="https://www.instagram.com/humansauce.lab/" target="_blank" rel="noopener noreferrer" className="text-neon-green hover:text-white transition-colors">
+                                <Instagram size={22} />
+                            </a>
+                            <a href="https://www.youtube.com/@HumanSauceLab" target="_blank" rel="noopener noreferrer" className="text-neon-green hover:text-white transition-colors">
+                                <Youtube size={22} />
+                            </a>
+                        </div>
                     </div>
+                    <p className="mb-10 font-sans font-light text-white/50 max-w-xl text-base leading-relaxed">
+                        A estrutura passo a passo para dominar a criação com IA. Da escolha da ferramenta única até a automação do seu processo.
+                    </p>
 
                     <div className="grid grid-cols-2 gap-10">
                         {modules.map(renderModuleCard)}
@@ -306,7 +354,7 @@ export default function ModulesSection({ onNext, onModuleClick }: ModulesSection
                         <span className="font-sans text-[10px] text-white/20 uppercase tracking-[0.5em]">H.S.L PROTOCOLO</span>
                     </div>
                     <div className="mt-2 flex justify-center pb-12">
-                        <button onClick={onNext} className="group relative px-10 py-4 border border-neon-yellow/30 text-neon-yellow font-sans font-bold uppercase tracking-[0.3em] hover:bg-neon-yellow hover:text-black hover:border-neon-yellow transition-all duration-500 overflow-hidden">
+                        <button onClick={onNext} className="group relative px-10 py-4 border border-neon-yellow/30 text-neon-yellow font-sans font-bold uppercase tracking-[0.3em] hover:bg-neon-yellow hover:text-black hover:border-neon-yellow transition-all duration-500 overflow-hidden animate-shimmer">
                             <span className="relative z-10 text-[14px]">PARA QUEM É O PROTOCOLO ?</span>
                             <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-neon-yellow" />
                             <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-neon-yellow" />
@@ -319,8 +367,32 @@ export default function ModulesSection({ onNext, onModuleClick }: ModulesSection
             <div className="block tablet:hidden w-full pt-20 pb-10 px-6">
                 <div className="flex flex-col items-center justify-start w-full gap-16 py-10">
                     <div className="flex flex-col items-center text-center w-full">
-                        <div className="w-12 h-[2px] bg-neon-green mb-4" />
-                        <h2 className="font-heading text-5xl leading-none text-white uppercase tracking-tighter mb-4">MÓDULOS<br /><span className="text-neon-yellow">INICIAIS</span></h2>
+                        <div className="w-full flex justify-center items-center mb-6">
+                            <div className="w-12 h-[2px] bg-neon-green" />
+                        </div>
+                        <h2 className="font-heading text-5xl leading-none text-white uppercase tracking-tighter mb-4 flex gap-[0.1em] justify-center">
+                            {"MÓDULOS".split('').map((char, i) => (
+                                <motion.span
+                                    key={`m-${i}`}
+                                    className="inline-block"
+                                    whileHover={{ scale: 1.2, color: '#adec19' }}
+                                >
+                                    {char}
+                                </motion.span>
+                            ))}
+                            {"\u00A0"}
+                            <span className="text-neon-yellow flex gap-[0.1em]">
+                                {"INICIAIS".split('').map((char, i) => (
+                                    <motion.span
+                                        key={`i-${i}`}
+                                        className="inline-block"
+                                        whileHover={{ scale: 1.2, color: '#white' }}
+                                    >
+                                        {char}
+                                    </motion.span>
+                                ))}
+                            </span>
+                        </h2>
                         <p className="mt-2 mb-12 font-sans font-light text-white/50 text-sm leading-relaxed max-w-[280px]">
                             A estrutura passo a passo para dominar a criação com IA. Da escolha da ferramenta única até a automação do seu processo.
                         </p>
@@ -337,9 +409,18 @@ export default function ModulesSection({ onNext, onModuleClick }: ModulesSection
                                 </div>
                             ))}
                         </div>
-                        <button onClick={onNext} className="w-full py-5 bg-neon-yellow text-black font-sans font-black uppercase tracking-widest">
+                        <button onClick={onNext} className="w-full py-5 bg-neon-yellow text-black font-sans font-black uppercase tracking-widest animate-shimmer">
                             PARA QUEM É O PROTOCOLO ?
                         </button>
+                        {/* Social Icons moved below the button */}
+                        <div className="flex items-center justify-center gap-8 mt-10">
+                            <a href="https://www.instagram.com/humansauce.lab/" target="_blank" rel="noopener noreferrer" className="text-neon-green hover:text-white transition-colors">
+                                <Instagram size={28} />
+                            </a>
+                            <a href="https://www.youtube.com/@HumanSauceLab" target="_blank" rel="noopener noreferrer" className="text-neon-green hover:text-white transition-colors">
+                                <Youtube size={28} />
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>

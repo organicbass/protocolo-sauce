@@ -2,6 +2,7 @@
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
+import { Instagram, Youtube } from 'lucide-react'
 import GlassCube from './GlassCube'
 
 interface HeroSectionProps {
@@ -9,6 +10,7 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ onStart }: HeroSectionProps) {
+    const sectionRef = useRef<HTMLElement>(null)
     const canvasRef = useRef<HTMLCanvasElement>(null)
 
     // Parallax Motion Values
@@ -62,7 +64,7 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
 
         const resize = () => {
             canvas.width = window.innerWidth
-            canvas.height = window.innerHeight
+            canvas.height = sectionRef.current?.offsetHeight || window.innerHeight
         }
         resize()
         window.addEventListener('resize', resize)
@@ -160,6 +162,7 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
 
     return (
         <motion.section
+            ref={sectionRef}
             className="relative w-screen h-screen overflow-hidden bg-black flex flex-col cursor-none"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -170,7 +173,21 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
             <div className="hidden pc:flex flex-col w-full h-full relative cursor-none">
                 <nav className="absolute top-0 left-0 w-full z-[100] flex justify-between items-center px-12 py-8 pointer-events-auto">
                     <div className="font-heading text-neon-green text-[18px] tracking-[0.3em] uppercase">Protocolo Sauce</div>
-                    <div className="flex items-center gap-8">
+                    <div className="flex items-center gap-6">
+                        <div className="flex items-center gap-4 mr-4 border-r border-white/10 pr-6">
+                            <a href="https://www.instagram.com/humansauce.lab/" target="_blank" rel="noopener noreferrer"
+                                className="group relative p-2 border border-neon-green/30 text-neon-green hover:bg-neon-green hover:text-black transition-all duration-300">
+                                <Instagram size={20} className="relative z-10" />
+                                <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-neon-green opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-neon-green opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </a>
+                            <a href="https://www.youtube.com/@HumanSauceLab" target="_blank" rel="noopener noreferrer"
+                                className="group relative p-2 border border-neon-green/30 text-neon-green hover:bg-neon-green hover:text-black transition-all duration-300">
+                                <Youtube size={20} className="relative z-10" />
+                                <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-neon-green opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-neon-green opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </a>
+                        </div>
                         <a href="#" className="font-sans text-xs text-neon-green uppercase tracking-[0.2em] hover:text-white transition-colors">SOBRE</a>
                         <a href="https://discord.gg/8mdQpd9Y" target="_blank" rel="noopener noreferrer" className="font-sans text-xs bg-neon-yellow text-black px-5 py-1.5 rounded-full font-bold uppercase tracking-[0.1em] hover:bg-white transition-colors">DISCORD</a>
                     </div>
@@ -178,13 +195,13 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
 
                 <div className="absolute inset-0 z-0">
                     <motion.div className="absolute inset-[-10%] z-[1] w-[120%] h-[120%]" style={{ x: layer000X, y: layer000Y }}>
-                        <Image src={`/000.png?v=${imageVersion}`} alt="BG" fill className="object-cover opacity-70" />
+                        <Image src={`/000.png?v=${imageVersion}`} alt="BG" fill className="object-cover opacity-70" quality={100} priority />
                     </motion.div>
                     <motion.div className="absolute inset-[-10%] z-[2] w-[120%] h-[120%]" style={{ x: layer001X, y: layer001Y }}>
-                        <Image src={`/001.png?v=${imageVersion}`} alt="BG Layer 1" fill className="object-cover" />
+                        <Image src={`/001.png?v=${imageVersion}`} alt="BG Layer 1" fill className="object-cover" quality={100} priority />
                     </motion.div>
                     <motion.div className="absolute inset-[-10%] z-[3] w-[120%] h-[120%]" style={{ x: charX, y: charY }}>
-                        <Image src={`/Hero.png?v=${imageVersion}`} alt="Hero Character" fill className="object-cover pc:scale-105" priority />
+                        <Image src={`/Hero.png?v=${imageVersion}`} alt="Hero Character" fill className="object-cover pc:scale-105" quality={100} priority />
                     </motion.div>
                     <canvas ref={canvasRef} className="absolute inset-0 z-10 w-full h-full pointer-events-none" />
                 </div>
@@ -196,7 +213,14 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
                     <div className="flex flex-col items-start text-left max-w-[650px] pointer-events-auto">
                         <h1 className="font-heading text-[77px] leading-[0.9] tracking-tighter text-white uppercase mb-6">DOMINE AS<br />FERRAMENTAS<br /><span className="text-neon-yellow">DO MERCADO ATUAL</span></h1>
                         <p className="font-sans font-light text-[23px] text-white/90 mb-10 leading-relaxed">Eu te ensino a utilizar as ferramentas de ponta do mercado atual para converter dias de trabalho em minutos de criação e a fatura <span className="font-bold text-neon-green">muito mais</span></p>
-                        <button onClick={onStart} className="px-12 py-5 bg-[#eceb21] text-black font-sans font-black text-[25px] uppercase tracking-[0.1em] hover:shadow-[0_0_40px_rgba(236,235,33,0.5)] transition-all">SAIBA MAIS</button>
+                        <button
+                            onClick={onStart}
+                            className="group relative px-12 py-5 border border-neon-yellow/30 text-neon-yellow font-sans font-black text-[25px] uppercase tracking-[0.1em] hover:bg-neon-yellow hover:text-black hover:border-neon-yellow transition-all duration-500 overflow-hidden animate-shimmer"
+                        >
+                            <span className="relative z-10">SAIBA MAIS</span>
+                            <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-neon-yellow" />
+                            <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-neon-yellow" />
+                        </button>
                     </div>
                 </div>
             </div>
@@ -205,7 +229,21 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
             <div className="hidden tablet:flex pc:hidden flex-col w-screen h-screen relative bg-black">
                 <nav className="absolute top-0 left-0 w-full z-[100] flex justify-between items-center px-12 py-8">
                     <div className="font-heading text-neon-green text-[18px] tracking-[0.3em] uppercase">Protocolo Sauce</div>
-                    <div className="flex items-center gap-8">
+                    <div className="flex items-center gap-6">
+                        <div className="flex items-center gap-4 mr-4 border-r border-white/10 pr-6">
+                            <a href="https://www.instagram.com/humansauce.lab/" target="_blank" rel="noopener noreferrer"
+                                className="group relative p-2 border border-neon-green/30 text-neon-green hover:bg-neon-green hover:text-black transition-all duration-300">
+                                <Instagram size={20} className="relative z-10" />
+                                <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-neon-green opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-neon-green opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </a>
+                            <a href="https://www.youtube.com/@HumanSauceLab" target="_blank" rel="noopener noreferrer"
+                                className="group relative p-2 border border-neon-green/30 text-neon-green hover:bg-neon-green hover:text-black transition-all duration-300">
+                                <Youtube size={20} className="relative z-10" />
+                                <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-neon-green opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-neon-green opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </a>
+                        </div>
                         <a href="#" className="font-sans text-xs text-neon-green uppercase tracking-[0.2em] hover:text-white transition-colors">SOBRE</a>
                         <a href="https://discord.gg/8mdQpd9Y" target="_blank" rel="noopener noreferrer" className="font-sans text-xs bg-neon-yellow text-black px-5 py-1.5 rounded-full font-bold uppercase tracking-[0.1em] hover:bg-white transition-colors">DISCORD</a>
                     </div>
@@ -217,10 +255,12 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
                         alt="Hero Tablet"
                         fill
                         className="object-cover object-center scale-105"
+                        quality={100}
                         priority
                     />
                     {/* PC-style overlay */}
                     <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/60" />
+                    <canvas ref={canvasRef} className="absolute inset-0 z-10 w-full h-full pointer-events-none" />
                 </div>
 
                 {/* Container on the right side (like PC), but text internal is left-aligned */}
@@ -236,9 +276,11 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
                         </p>
                         <button
                             onClick={onStart}
-                            className="px-10 py-5 bg-[#eceb21] text-black font-sans font-black text-xl uppercase tracking-widest shadow-[0_0_30px_rgba(236,235,33,0.3)]"
+                            className="group relative px-10 py-5 border border-neon-yellow/30 text-neon-yellow font-sans font-black text-xl uppercase tracking-widest transition-all duration-500 overflow-hidden hover:bg-neon-yellow hover:text-black animate-shimmer"
                         >
-                            SAIBA MAIS
+                            <span className="relative z-10">SAIBA MAIS</span>
+                            <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-neon-yellow" />
+                            <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-neon-yellow" />
                         </button>
                     </div>
                 </div>
@@ -252,9 +294,11 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
                         alt="Hero Mobile"
                         fill
                         className="object-cover object-top"
+                        quality={100}
                         priority
                     />
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black" />
+                    <canvas ref={canvasRef} className="absolute inset-0 z-10 w-full h-full pointer-events-none" />
                 </div>
 
                 {/* Text Content - overlaid and shifted up */}
@@ -270,10 +314,21 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
                     </p>
                     <button
                         onClick={onStart}
-                        className="w-full py-6 bg-[#eceb21] text-black font-sans font-black text-xl uppercase tracking-widest shadow-[0_0_30px_rgba(236,235,33,0.3)]"
+                        className="group relative w-full py-6 border border-neon-yellow/30 text-neon-yellow font-sans font-black text-xl uppercase tracking-widest transition-all duration-500 overflow-hidden hover:bg-neon-yellow hover:text-black animate-shimmer"
                     >
-                        SAIBA MAIS
+                        <span className="relative z-10">SAIBA MAIS</span>
+                        <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-neon-yellow" />
+                        <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-neon-yellow" />
                     </button>
+                    {/* Social Icons moved below the button */}
+                    <div className="flex items-center gap-8 mt-10">
+                        <a href="https://www.instagram.com/humansauce.lab/" target="_blank" rel="noopener noreferrer" className="text-neon-green hover:text-white transition-colors">
+                            <Instagram size={28} />
+                        </a>
+                        <a href="https://www.youtube.com/@HumanSauceLab" target="_blank" rel="noopener noreferrer" className="text-neon-green hover:text-white transition-colors">
+                            <Youtube size={28} />
+                        </a>
+                    </div>
                 </div>
             </div>
 
