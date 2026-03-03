@@ -3,7 +3,6 @@ import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 import { Instagram, Youtube } from 'lucide-react'
-import GlassCube from './GlassCube'
 
 interface HeroSectionProps {
     onStart: () => void
@@ -27,15 +26,50 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
     const bgY = useTransform(smoothY, [-500, 500], [15, -15])
 
     // New Background Layers (Parallax Depth)
-    const layer000X = useTransform(smoothX, [-500, 500], [15, -15])
-    const layer000Y = useTransform(smoothY, [-500, 500], [15, -15])
-    const layer001X = useTransform(smoothX, [-500, 500], [18, -18])
-    const layer001Y = useTransform(smoothY, [-500, 500], [12, -12])
+    const layerAnimX = useTransform(smoothX, [-500, 500], [15, -15])
+    const layerAnimY = useTransform(smoothY, [-500, 500], [15, -15])
 
     const charX = useTransform(smoothX, [-500, 500], [35, -35])
     const charY = useTransform(smoothY, [-500, 500], [15, -15])
     const particlesX = useTransform(smoothX, [-500, 500], [50, -50])
     const particlesY = useTransform(smoothY, [-500, 500], [50, -50])
+
+    // Frame Animation & Preloading
+    const [images, setImages] = useState<HTMLImageElement[]>([])
+    const [isLoaded, setIsLoaded] = useState(false)
+    const frameIndexRef = useRef(0)
+    const lastTimeRef = useRef(0)
+    const directionRef = useRef(1) // 1 for forward, -1 for backward
+
+    useEffect(() => {
+        let loadedCount = 0
+        const totalFrames = 283 // Updated for new 283 frames
+        const loadedImages: HTMLImageElement[] = new Array(totalFrames)
+
+        for (let i = 1; i <= totalFrames; i++) {
+            const img = new (window as any).Image()
+            const frameNumber = String(i).padStart(3, '0')
+            // Path fixed to match public/bg-frames/frames/
+            img.src = `/bg-frames/frames/${frameNumber}.jpg`
+            img.onload = () => {
+                loadedCount++
+                if (loadedCount === totalFrames) {
+                    // Set images once all are loaded to ensure consistency
+                    setImages([...loadedImages])
+                    setIsLoaded(true)
+                }
+            }
+            img.onerror = () => {
+                console.error(`Failed to load frame: ${frameNumber}`)
+                loadedCount++ // Still increment to reach totalFrames
+                if (loadedCount === totalFrames) {
+                    setImages([...loadedImages])
+                    setIsLoaded(true)
+                }
+            }
+            loadedImages[i - 1] = img
+        }
+    }, [])
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
@@ -50,127 +84,161 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
         return () => window.removeEventListener('mousemove', handleMouseMove)
     }, [mouseX, mouseY])
 
-    // Particle system for background
+    // Main animation loop (Background + Particles)
     useEffect(() => {
         const canvas = canvasRef.current
         if (!canvas) return
-
-        const ctx = canvas.getContext('2d')
+        const ctx = canvas.getContext('2d', { alpha: true })
         if (!ctx) return
+        ctx.imageSmoothingEnabled = true
+        ctx.imageSmoothingQuality = 'high'
 
         let animationId: number
-        let currentX = 0
-        let currentY = 0
 
         const resize = () => {
-            canvas.width = window.innerWidth
-            canvas.height = sectionRef.current?.offsetHeight || window.innerHeight
+            if (canvas) {
+                canvas.width = window.innerWidth
+                canvas.height = sectionRef.current?.offsetHeight || window.innerHeight
+            }
         }
         resize()
         window.addEventListener('resize', resize)
 
-        // Particles
         class Particle {
-            x: number
-            y: number
-            size: number
-            speedX: number
-            speedY: number
-            opacity: number
-            color: string
-
+            x: number; y: number; size: number; speedX: number; speedY: number; opacity: number; color: string
             constructor() {
                 this.x = Math.random() * canvas!.width
                 this.y = Math.random() * canvas!.height
-                this.size = Math.random() * 2 + 1 // Balanced size
+                this.size = Math.random() * 2 + 1
                 this.speedX = (Math.random() - 0.5) * 0.2
-                this.speedY = Math.random() * 2 + 0.5 // Always falling down like 'drops'
+                this.speedY = Math.random() * 2 + 0.5
                 this.opacity = Math.random() * 0.7 + 0.3
                 this.color = Math.random() > 0.5 ? '#adec19' : '#eceb21'
             }
-
             update(mX: number, mY: number) {
-                // React to mouse (parallax-like influence)
                 const dx = (mX + window.innerWidth / 2) - this.x
                 const dy = (mY + window.innerHeight / 2) - this.y
                 const dist = Math.sqrt(dx * dx + dy * dy)
-
                 if (dist < 150) {
-                    this.x -= dx * 0.01
-                    this.y -= dy * 0.01
+                    this.x -= dx * 0.01; this.y -= dy * 0.01
                     this.opacity = Math.min(this.opacity + 0.02, 0.8)
                 } else {
                     this.opacity = Math.max(this.opacity - 0.005, 0.1)
                 }
-
-                this.x += this.speedX
-                this.y += this.speedY
-
+                this.x += this.speedX; this.y += this.speedY
                 if (this.x < 0) this.x = canvas!.width
                 if (this.x > canvas!.width) this.x = 0
                 if (this.y < 0) this.y = canvas!.height
                 if (this.y > canvas!.height) this.y = 0
             }
-
             draw() {
                 if (!ctx) return
-                ctx.beginPath()
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2)
-                ctx.fillStyle = this.color
-                ctx.globalAlpha = this.opacity
-
-                // Add glow effect
-                ctx.shadowBlur = 10
-                ctx.shadowColor = this.color
-
-                ctx.fill()
-
-                // Reset shadow for next draws
-                ctx.shadowBlur = 0
-                ctx.globalAlpha = 1
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2)
+                ctx.fillStyle = this.color; ctx.globalAlpha = this.opacity
+                ctx.shadowBlur = 10; ctx.shadowColor = this.color; ctx.fill()
+                ctx.shadowBlur = 0; ctx.globalAlpha = 1
             }
         }
 
         const particles: Particle[] = []
-        const particleCount = Math.min(200, Math.floor(canvas.width * canvas.height / 10000)) // More drops
-        for (let i = 0; i < particleCount; i++) {
-            particles.push(new Particle())
-        }
+        const particleCount = Math.min(200, Math.floor(canvas.width * canvas.height / 10000))
+        for (let i = 0; i < particleCount; i++) particles.push(new Particle())
 
-        function animate() {
+        function animate(time: number) {
             if (!ctx || !canvas) return
             ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-            // Update particles with smooth mouse influence
-            particles.forEach(p => {
-                p.update(smoothX.get(), smoothY.get())
-                p.draw()
-            })
+            // 1. Draw Background Frame
+            if (images.length > 0) {
+                const deltaTime = time - lastTimeRef.current
+                if (deltaTime > 33) { // 30fps for smooth video fluidity
+                    // Simple cycle loop
+                    frameIndexRef.current = (frameIndexRef.current + 1) % images.length
+                    lastTimeRef.current = time
+                }
+
+                const currentImg = images[frameIndexRef.current]
+                if (currentImg && currentImg.complete) {
+                    // Parallax for Background
+                    const px = smoothX.get() * 0.05
+                    const py = smoothY.get() * 0.05
+
+                    ctx.save()
+                    ctx.globalAlpha = 0.22 // Reduced by 3 (from 0.25 to 0.22) as requested
+
+                    // Object-cover style drawing
+                    const canvasRatio = canvas.width / canvas.height
+                    const imgRatio = currentImg.width / currentImg.height
+                    let drawWidth = canvas.width
+                    let drawHeight = canvas.height
+                    let offsetX = 0
+                    let offsetY = 0
+
+                    if (canvasRatio > imgRatio) {
+                        drawHeight = canvas.width / imgRatio
+                        offsetY = (canvas.height - drawHeight) / 2
+                    } else {
+                        drawWidth = canvas.height * imgRatio
+                        offsetX = (canvas.width - drawWidth) / 2
+                    }
+
+                    // Apply Parallax and Scale for better coverage
+                    const scaleFactor = 1.1
+                    ctx.drawImage(
+                        currentImg,
+                        offsetX - (drawWidth * (scaleFactor - 1) / 2) + px,
+                        offsetY - (drawHeight * (scaleFactor - 1) / 2) + py,
+                        drawWidth * scaleFactor,
+                        drawHeight * scaleFactor
+                    )
+                    ctx.restore()
+
+                    // 1.5 Draw Cinematic Vignette
+                    ctx.save()
+                    const gradient = ctx.createRadialGradient(
+                        canvas.width / 2, canvas.height / 2, 0,
+                        canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height) * 0.7
+                    )
+                    gradient.addColorStop(0, 'rgba(0, 0, 0, 0)')
+                    gradient.addColorStop(1, 'rgba(0, 0, 0, 0.7)')
+                    ctx.fillStyle = gradient
+                    ctx.fillRect(0, 0, canvas.width, canvas.height)
+                    ctx.restore()
+                }
+            }
+
+            // 2. Draw Particles
+            particles.forEach(p => { p.update(smoothX.get(), smoothY.get()); p.draw() })
 
             animationId = requestAnimationFrame(animate)
         }
-        animate()
 
+        animationId = requestAnimationFrame(animate)
         return () => {
             cancelAnimationFrame(animationId)
             window.removeEventListener('resize', resize)
         }
-    }, [smoothX, smoothY])
+    }, [images]) // Re-run when images are loaded
 
-    // Cache busting for dynamic assets during dev
     const [imageVersion] = useState(Date.now())
 
     return (
         <motion.section
             ref={sectionRef}
-            className="relative w-screen h-screen overflow-hidden bg-black flex flex-col cursor-none"
+            className="relative w-screen h-screen overflow-hidden bg-black flex flex-col"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            animate={{ opacity: isLoaded ? 1 : 0 }}
             exit={{ opacity: 0, filter: 'blur(20px)' }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
         >
+            {/* Background Canvas - Single instance for all views */}
+            <canvas
+                ref={canvasRef}
+                className="absolute inset-0 z-[1] w-full h-full pointer-events-none"
+            />
+
             {/* PC VIEW (>= 1200px) */}
-            <div className="hidden pc:flex flex-col w-full h-full relative cursor-none">
+            <div className="hidden pc:flex flex-col w-full h-full relative">
                 <nav className="absolute top-0 left-0 w-full z-[100] flex justify-between items-center px-12 py-8 pointer-events-auto">
                     <div className="font-heading text-neon-green text-[18px] tracking-[0.3em] uppercase">Protocolo Sauce</div>
                     <div className="flex items-center gap-6">
@@ -193,23 +261,13 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
                     </div>
                 </nav>
 
-                <div className="absolute inset-0 z-0">
-                    <motion.div className="absolute inset-[-10%] z-[1] w-[120%] h-[120%]" style={{ x: layer000X, y: layer000Y }}>
-                        <Image src={`/000.png?v=${imageVersion}`} alt="BG" fill className="object-cover opacity-70" quality={100} priority />
-                    </motion.div>
-                    <motion.div className="absolute inset-[-10%] z-[2] w-[120%] h-[120%]" style={{ x: layer001X, y: layer001Y }}>
-                        <Image src={`/001.png?v=${imageVersion}`} alt="BG Layer 1" fill className="object-cover" quality={100} priority />
-                    </motion.div>
+                <div className="absolute inset-0 z-[2]">
                     <motion.div className="absolute inset-[-10%] z-[3] w-[120%] h-[120%]" style={{ x: charX, y: charY }}>
                         <Image src={`/Hero.png?v=${imageVersion}`} alt="Hero Character" fill className="object-cover pc:scale-105" quality={100} priority />
                     </motion.div>
-                    <canvas ref={canvasRef} className="absolute inset-0 z-10 w-full h-full pointer-events-none" />
                 </div>
 
                 <div className="relative z-50 h-full flex items-center justify-end px-32 pr-[228px] pointer-events-none">
-                    <motion.div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999] pointer-events-none" style={{ x: smoothX, y: smoothY }}>
-                        <GlassCube mouseX={smoothX} mouseY={smoothY} />
-                    </motion.div>
                     <div className="flex flex-col items-start text-left max-w-[650px] pointer-events-auto">
                         <h1 className="font-heading text-[77px] leading-[0.9] tracking-tighter text-white uppercase mb-6">DOMINE AS<br />FERRAMENTAS<br /><span className="text-neon-yellow">DO MERCADO ATUAL</span></h1>
                         <p className="font-sans font-light text-[23px] text-white/90 mb-10 leading-relaxed">Eu te ensino a utilizar as ferramentas de ponta do mercado atual para converter dias de trabalho em minutos de criação e a fatura <span className="font-bold text-neon-green">muito mais</span></p>
@@ -249,7 +307,7 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
                     </div>
                 </nav>
 
-                <div className="absolute inset-0 z-0">
+                <div className="absolute inset-0 z-[2]">
                     <Image
                         src={`/Hero.png?v=${imageVersion}`}
                         alt="Hero Tablet"
@@ -258,13 +316,10 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
                         quality={100}
                         priority
                     />
-                    {/* PC-style overlay */}
                     <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/60" />
-                    <canvas ref={canvasRef} className="absolute inset-0 z-10 w-full h-full pointer-events-none" />
                 </div>
 
-                {/* Container on the right side (like PC), but text internal is left-aligned */}
-                <div className="relative z-10 h-full flex items-center justify-end px-12 pr-20 pointer-events-none">
+                <div className="relative z-20 h-full flex items-center justify-end px-12 pr-20 pointer-events-none">
                     <div className="flex flex-col items-start text-left max-w-[450px] pointer-events-auto">
                         <h1 className="font-heading text-6xl leading-[0.9] tracking-tighter text-white uppercase mb-8">
                             DOMINE AS<br />
@@ -285,24 +340,10 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
                     </div>
                 </div>
             </div>
-            {/* MOBILE VIEW (< 810px) */}
-            <div className="flex tablet:hidden flex-col w-full min-h-screen bg-black relative overflow-x-hidden">
-                {/* Image Background - "Free" version */}
-                <div className="absolute top-0 left-0 w-full h-[550px] z-0">
-                    <Image
-                        src={`/Herocelular.png?v=${imageVersion}`}
-                        alt="Hero Mobile"
-                        fill
-                        className="object-cover object-top"
-                        quality={100}
-                        priority
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black" />
-                    <canvas ref={canvasRef} className="absolute inset-0 z-10 w-full h-full pointer-events-none" />
-                </div>
 
-                {/* Text Content - overlaid and shifted up */}
-                <div className="relative z-10 w-full px-6 pt-[440px] pb-12 flex flex-col items-center text-center -translate-y-[145px]">
+            {/* MOBILE VIEW (< 810px) */}
+            <div className="flex tablet:hidden flex-col w-full h-screen bg-black relative overflow-hidden">
+                <div className="relative z-20 w-full h-full px-6 flex flex-col items-center justify-center text-center">
                     <div className="w-12 h-[2px] bg-neon-green mb-8" />
                     <h1 className="font-heading text-[52px] leading-[0.85] tracking-tighter text-white uppercase mb-8">
                         DOMINE AS<br />
@@ -320,7 +361,6 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
                         <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-neon-yellow" />
                         <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-neon-yellow" />
                     </button>
-                    {/* Social Icons moved below the button */}
                     <div className="flex items-center gap-8 mt-10">
                         <a href="https://www.instagram.com/humansauce.lab/" target="_blank" rel="noopener noreferrer" className="text-neon-green hover:text-white transition-colors">
                             <Instagram size={28} />
