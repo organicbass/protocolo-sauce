@@ -103,7 +103,7 @@ export default function ModulesSection({ onNext, onModuleClick }: ModulesSection
                 this.size = Math.random() * 2 + 1
                 this.speedX = (Math.random() - 0.5) * 0.2
                 this.speedY = Math.random() * 2 + 0.5
-                this.opacity = Math.random() * 0.4 + 0.1
+                this.opacity = Math.random() * 0.7 + 0.3
                 this.color = Math.random() > 0.5 ? '#adec19' : '#eceb21'
             }
 
@@ -221,11 +221,7 @@ export default function ModulesSection({ onNext, onModuleClick }: ModulesSection
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.8, duration: 1.5, ease: 'easeOut' }}
                 >
-                    <img
-                        src={`/003.png?v=${imageVersion}`}
-                        alt="Background Character"
-                        className="absolute opacity-20 top-[150px] right-[200px] scale-100 max-h-full w-auto saturate-[0.3] brightness-[0.7]"
-                    />
+                    <img src={`/003.png?v=${imageVersion}`} alt="Background Character" className="absolute opacity-50 top-[150px] right-[200px] scale-100 max-h-full w-auto" />
                 </motion.div>
 
                 <motion.div className="relative z-10 max-w-7xl mx-auto -translate-y-[10px]" style={{ x: containerX, y: containerY }}>
@@ -297,11 +293,7 @@ export default function ModulesSection({ onNext, onModuleClick }: ModulesSection
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.8, duration: 1.5, ease: 'easeOut' }}
                 >
-                    <img
-                        src={`/003.png?v=${imageVersion}`}
-                        alt="Background Character"
-                        className="absolute opacity-20 top-[150px] right-[40px] scale-[0.8] max-h-full w-auto saturate-[0.3] brightness-[0.7]"
-                    />
+                    <img src={`/003.png?v=${imageVersion}`} alt="Background Character" className="absolute opacity-50 top-[150px] right-[40px] scale-[0.8] max-h-full w-auto" />
                 </motion.div>
 
                 <motion.div className="relative z-10 max-w-7xl mx-auto -translate-y-[10px]" style={{ x: containerX, y: containerY }}>
