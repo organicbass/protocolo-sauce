@@ -2,7 +2,6 @@
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import { useEffect, useState, useRef } from 'react'
 import { Shield, Zap, Target, BarChart3, Binary, Cpu, Instagram, Youtube } from 'lucide-react'
-import GlassCube from './GlassCube'
 
 const modules = [
     {
@@ -10,14 +9,14 @@ const modules = [
         title: 'Implementação de Fluxo de\u00A0Trabalho',
         description: 'Chega de perder horas testando prompts ou pagando por ferramentas que você não usa. Aprenda a configurar seu próprio agente de IA e descubra o ecossistema exato para gerar resultados profissionais',
         icon: <Cpu className="w-6 h-6" />,
-        status: 'Acesso em breve',
+        status: 'Disponível para Acesso',
     },
     {
         id: '02',
         title: 'Design de Conversão',
         description: 'Multiplique sua capacidade de entrega. Aprenda a transformar referências em dezenas de artes de alta conversão em menos de 30 minutos, escalando seus contratos sem trabalhar horas a mais.',
         icon: <Target className="w-6 h-6" />,
-        status: 'Acesso em breve',
+        status: 'Disponível para Acesso',
     },
     {
         id: '03',
@@ -104,7 +103,7 @@ export default function ModulesSection({ onNext, onModuleClick }: ModulesSection
                 this.size = Math.random() * 2 + 1
                 this.speedX = (Math.random() - 0.5) * 0.2
                 this.speedY = Math.random() * 2 + 0.5
-                this.opacity = Math.random() * 0.7 + 0.3
+                this.opacity = Math.random() * 0.4 + 0.1
                 this.color = Math.random() > 0.5 ? '#adec19' : '#eceb21'
             }
 
@@ -199,24 +198,12 @@ export default function ModulesSection({ onNext, onModuleClick }: ModulesSection
     return (
         <motion.section
             ref={sectionRef}
-            className="relative w-screen min-h-screen bg-black cursor-none"
+            className="relative w-screen min-h-screen bg-black"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, x: -100 }}
             transition={{ duration: 0.8 }}
         >
-            {/* Glass Cube Cursor (PC only) */}
-            <motion.div
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999] pointer-events-none hidden pc:block"
-                style={{ x: smoothX, y: smoothY }}
-            >
-                <GlassCube mouseX={smoothX} mouseY={smoothY} />
-            </motion.div>
-
-            {/* Glitch Overlay */}
-            {glitching && (
-                <div className="absolute inset-0 z-[100] bg-neon-green/10 pointer-events-none animate-glitch" />
-            )}
 
             {/* Particles — shared */}
             <motion.canvas
@@ -234,7 +221,11 @@ export default function ModulesSection({ onNext, onModuleClick }: ModulesSection
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.8, duration: 1.5, ease: 'easeOut' }}
                 >
-                    <img src={`/003.png?v=${imageVersion}`} alt="Background Character" className="absolute opacity-50 top-[150px] right-[200px] scale-100 max-h-full w-auto" />
+                    <img
+                        src={`/003.png?v=${imageVersion}`}
+                        alt="Background Character"
+                        className="absolute opacity-20 top-[150px] right-[200px] scale-100 max-h-full w-auto saturate-[0.3] brightness-[0.7]"
+                    />
                 </motion.div>
 
                 <motion.div className="relative z-10 max-w-7xl mx-auto -translate-y-[10px]" style={{ x: containerX, y: containerY }}>
@@ -306,7 +297,11 @@ export default function ModulesSection({ onNext, onModuleClick }: ModulesSection
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.8, duration: 1.5, ease: 'easeOut' }}
                 >
-                    <img src={`/003.png?v=${imageVersion}`} alt="Background Character" className="absolute opacity-50 top-[150px] right-[40px] scale-[0.8] max-h-full w-auto" />
+                    <img
+                        src={`/003.png?v=${imageVersion}`}
+                        alt="Background Character"
+                        className="absolute opacity-20 top-[150px] right-[40px] scale-[0.8] max-h-full w-auto saturate-[0.3] brightness-[0.7]"
+                    />
                 </motion.div>
 
                 <motion.div className="relative z-10 max-w-7xl mx-auto -translate-y-[10px]" style={{ x: containerX, y: containerY }}>
