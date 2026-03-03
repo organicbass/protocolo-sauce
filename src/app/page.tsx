@@ -97,7 +97,7 @@ export default function LabPage() {
   }, [initContext])
 
   return (
-    <main className="min-h-screen w-screen overflow-x-hidden overflow-y-auto bg-black relative">
+    <main className="w-screen min-h-screen bg-black relative">
       <AnimatePresence mode="wait">
         {scene === 'hero' && (
           <HeroSection key="hero" onStart={handleStart} />

@@ -225,7 +225,7 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
     return (
         <motion.section
             ref={sectionRef}
-            className="relative w-screen h-screen overflow-hidden bg-black flex flex-col"
+            className="relative w-screen min-h-screen pc:h-screen overflow-x-hidden pc:overflow-hidden bg-black flex flex-col"
             initial={{ opacity: 0 }}
             animate={{ opacity: isLoaded ? 1 : 0 }}
             exit={{ opacity: 0, filter: 'blur(20px)' }}
