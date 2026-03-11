@@ -2,7 +2,6 @@
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import { useEffect, useRef } from 'react'
 import { ArrowLeft, Play } from 'lucide-react'
-import GlassCube from './GlassCube'
 
 interface ModuleDetailProps {
     moduleId: string
@@ -100,20 +99,12 @@ export default function ModuleDetail({ moduleId, title, description, vslUrl, cta
 
     return (
         <motion.section
-            className="relative w-screen min-h-screen bg-black overflow-hidden flex flex-col cursor-none"
+            className="relative w-screen min-h-screen bg-black overflow-hidden flex flex-col"
             initial={{ opacity: 0, x: 100 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -100 }}
             transition={{ duration: 0.6, ease: 'easeOut' }}
         >
-            {/* Glass Cube Cursor */}
-            <motion.div
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999] pointer-events-none hidden pc:block"
-                style={{ x: smoothX, y: smoothY }}
-            >
-                <GlassCube mouseX={smoothX} mouseY={smoothY} />
-            </motion.div>
-
             {/* Background Grid */}
             <div className="absolute inset-0 z-0 pointer-events-none opacity-10">
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#1a1a1a_1px,transparent_1px),linear-gradient(to_bottom,#1a1a1a_1px,transparent_1px)] bg-[size:60px_60px]" />
