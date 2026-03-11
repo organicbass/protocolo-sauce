@@ -3,8 +3,12 @@ const nextConfig = {
     async rewrites() {
       return [
         {
+          source: '/ogbass',
+          destination: 'https://organic-bass-site-git-main-organicbass-projects.vercel.app/ogbass',
+        },
+        {
           source: '/ogbass/:path*',
-          destination: 'https://organic-bass-site.vercel.app/ogbass/:path*',
+          destination: 'https://organic-bass-site-git-main-organicbass-projects.vercel.app/ogbass/:path*',
         },
       ];
     },
