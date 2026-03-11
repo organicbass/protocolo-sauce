@@ -1,5 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    async rewrites() {
+      return [
+        {
+          source: '/ogbass/:path*',
+          destination: 'https://organic-bass-site.vercel.app/ogbass/:path*',
+        },
+      ];
+    },
     eslint: {
         // Warning: This allows production builds to successfully complete even if
         // your project has ESLint errors.
