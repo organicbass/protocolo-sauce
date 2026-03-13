@@ -2,14 +2,12 @@
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
-import { Instagram, Youtube } from 'lucide-react'
 
 interface HeroSectionProps {
     onStart: () => void
 }
 
 export default function HeroSection({ onStart }: HeroSectionProps) {
-    const sectionRef = useRef<HTMLElement>(null)
     const canvasRef = useRef<HTMLCanvasElement>(null)
 
     // Parallax Motion Values
@@ -24,52 +22,10 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
     // Transform values for different layers (parallax depth)
     const bgX = useTransform(smoothX, [-500, 500], [15, -15])
     const bgY = useTransform(smoothY, [-500, 500], [15, -15])
-
-    // New Background Layers (Parallax Depth)
-    const layerAnimX = useTransform(smoothX, [-500, 500], [15, -15])
-    const layerAnimY = useTransform(smoothY, [-500, 500], [15, -15])
-
-    const charX = useTransform(smoothX, [-500, 500], [35, -35])
-    const charY = useTransform(smoothY, [-500, 500], [15, -15])
-    const particlesX = useTransform(smoothX, [-500, 500], [50, -50])
-    const particlesY = useTransform(smoothY, [-500, 500], [50, -50])
-
-    // Frame Animation & Preloading
-    const [images, setImages] = useState<HTMLImageElement[]>([])
-    const [isLoaded, setIsLoaded] = useState(false)
-    const frameIndexRef = useRef(0)
-    const lastTimeRef = useRef(0)
-    const directionRef = useRef(1) // 1 for forward, -1 for backward
-
-    useEffect(() => {
-        let loadedCount = 0
-        const totalFrames = 283 // Updated for new 283 frames
-        const loadedImages: HTMLImageElement[] = new Array(totalFrames)
-
-        for (let i = 1; i <= totalFrames; i++) {
-            const img = new (window as any).Image()
-            const frameNumber = String(i).padStart(3, '0')
-            // Path fixed to match public/bg-frames/frames/
-            img.src = `/bg-frames/frames/${frameNumber}.jpg`
-            img.onload = () => {
-                loadedCount++
-                if (loadedCount === totalFrames) {
-                    // Set images once all are loaded to ensure consistency
-                    setImages([...loadedImages])
-                    setIsLoaded(true)
-                }
-            }
-            img.onerror = () => {
-                console.error(`Failed to load frame: ${frameNumber}`)
-                loadedCount++ // Still increment to reach totalFrames
-                if (loadedCount === totalFrames) {
-                    setImages([...loadedImages])
-                    setIsLoaded(true)
-                }
-            }
-            loadedImages[i - 1] = img
-        }
-    }, [])
+    const charX = useTransform(smoothX, [-500, 500], [25, -25])
+    const charY = useTransform(smoothY, [-500, 500], [10, -10])
+    const particlesX = useTransform(smoothX, [-500, 500], [40, -40])
+    const particlesY = useTransform(smoothY, [-500, 500], [40, -40])
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
@@ -84,292 +40,201 @@ export default function HeroSection({ onStart }: HeroSectionProps) {
         return () => window.removeEventListener('mousemove', handleMouseMove)
     }, [mouseX, mouseY])
 
-    // Main animation loop (Background + Particles)
+    // Particle system for background
     useEffect(() => {
         const canvas = canvasRef.current
         if (!canvas) return
-        const ctx = canvas.getContext('2d', { alpha: true })
+
+        const ctx = canvas.getContext('2d')
         if (!ctx) return
-        ctx.imageSmoothingEnabled = true
-        ctx.imageSmoothingQuality = 'high'
 
         let animationId: number
+        let currentX = 0
+        let currentY = 0
 
         const resize = () => {
-            if (canvas) {
-                canvas.width = window.innerWidth
-                canvas.height = sectionRef.current?.offsetHeight || window.innerHeight
-            }
+            canvas.width = window.innerWidth
+            canvas.height = window.innerHeight
         }
         resize()
         window.addEventListener('resize', resize)
 
+        // Particles
         class Particle {
-            x: number; y: number; size: number; speedX: number; speedY: number; opacity: number; color: string
+            x: number
+            y: number
+            size: number
+            speedX: number
+            speedY: number
+            opacity: number
+            color: string
+
             constructor() {
                 this.x = Math.random() * canvas!.width
                 this.y = Math.random() * canvas!.height
-                this.size = Math.random() * 2 + 1
-                this.speedX = (Math.random() - 0.5) * 0.2
-                this.speedY = Math.random() * 2 + 0.5
-                this.opacity = Math.random() * 0.7 + 0.3
+                this.size = Math.random() * 2 + 0.5
+                this.speedX = (Math.random() - 0.5) * 0.5
+                this.speedY = (Math.random() - 0.5) * 0.5
+                this.opacity = Math.random() * 0.5 + 0.1
                 this.color = Math.random() > 0.5 ? '#adec19' : '#eceb21'
             }
+
             update(mX: number, mY: number) {
+                // React to mouse (parallax-like influence)
                 const dx = (mX + window.innerWidth / 2) - this.x
                 const dy = (mY + window.innerHeight / 2) - this.y
                 const dist = Math.sqrt(dx * dx + dy * dy)
+
                 if (dist < 150) {
-                    this.x -= dx * 0.01; this.y -= dy * 0.01
+                    this.x -= dx * 0.01
+                    this.y -= dy * 0.01
                     this.opacity = Math.min(this.opacity + 0.02, 0.8)
                 } else {
                     this.opacity = Math.max(this.opacity - 0.005, 0.1)
                 }
-                this.x += this.speedX; this.y += this.speedY
+
+                this.x += this.speedX
+                this.y += this.speedY
+
                 if (this.x < 0) this.x = canvas!.width
                 if (this.x > canvas!.width) this.x = 0
                 if (this.y < 0) this.y = canvas!.height
                 if (this.y > canvas!.height) this.y = 0
             }
+
             draw() {
                 if (!ctx) return
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2)
-                ctx.fillStyle = this.color; ctx.globalAlpha = this.opacity
-                ctx.shadowBlur = 10; ctx.shadowColor = this.color; ctx.fill()
-                ctx.shadowBlur = 0; ctx.globalAlpha = 1
+                ctx.beginPath()
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2)
+                ctx.fillStyle = this.color
+                ctx.globalAlpha = this.opacity
+                ctx.fill()
+                ctx.globalAlpha = 1
             }
         }
 
         const particles: Particle[] = []
-        const particleCount = Math.min(200, Math.floor(canvas.width * canvas.height / 10000))
-        for (let i = 0; i < particleCount; i++) particles.push(new Particle())
+        const particleCount = Math.min(100, Math.floor(canvas.width * canvas.height / 20000))
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle())
+        }
 
-        function animate(time: number) {
+        function animate() {
             if (!ctx || !canvas) return
             ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-            // 1. Draw Background Frame
-            if (images.length > 0) {
-                const deltaTime = time - lastTimeRef.current
-                if (deltaTime > 33) { // 30fps for smooth video fluidity
-                    // Simple cycle loop
-                    frameIndexRef.current = (frameIndexRef.current + 1) % images.length
-                    lastTimeRef.current = time
-                }
-
-                const currentImg = images[frameIndexRef.current]
-                if (currentImg && currentImg.complete) {
-                    // Parallax for Background
-                    const px = smoothX.get() * 0.05
-                    const py = smoothY.get() * 0.05
-
-                    ctx.save()
-                    ctx.globalAlpha = 0.22 // Reduced by 3 (from 0.25 to 0.22) as requested
-
-                    // Object-cover style drawing
-                    const canvasRatio = canvas.width / canvas.height
-                    const imgRatio = currentImg.width / currentImg.height
-                    let drawWidth = canvas.width
-                    let drawHeight = canvas.height
-                    let offsetX = 0
-                    let offsetY = 0
-
-                    if (canvasRatio > imgRatio) {
-                        drawHeight = canvas.width / imgRatio
-                        offsetY = (canvas.height - drawHeight) / 2
-                    } else {
-                        drawWidth = canvas.height * imgRatio
-                        offsetX = (canvas.width - drawWidth) / 2
-                    }
-
-                    // Apply Parallax and Scale for better coverage
-                    const scaleFactor = 1.1
-                    ctx.drawImage(
-                        currentImg,
-                        offsetX - (drawWidth * (scaleFactor - 1) / 2) + px,
-                        offsetY - (drawHeight * (scaleFactor - 1) / 2) + py,
-                        drawWidth * scaleFactor,
-                        drawHeight * scaleFactor
-                    )
-                    ctx.restore()
-
-                    // 1.5 Draw Cinematic Vignette
-                    ctx.save()
-                    const gradient = ctx.createRadialGradient(
-                        canvas.width / 2, canvas.height / 2, 0,
-                        canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height) * 0.7
-                    )
-                    gradient.addColorStop(0, 'rgba(0, 0, 0, 0)')
-                    gradient.addColorStop(1, 'rgba(0, 0, 0, 0.7)')
-                    ctx.fillStyle = gradient
-                    ctx.fillRect(0, 0, canvas.width, canvas.height)
-                    ctx.restore()
-                }
-            }
-
-            // 2. Draw Particles
-            particles.forEach(p => { p.update(smoothX.get(), smoothY.get()); p.draw() })
+            // Update particles with smooth mouse influence
+            particles.forEach(p => {
+                p.update(smoothX.get(), smoothY.get())
+                p.draw()
+            })
 
             animationId = requestAnimationFrame(animate)
         }
+        animate()
 
-        animationId = requestAnimationFrame(animate)
         return () => {
             cancelAnimationFrame(animationId)
             window.removeEventListener('resize', resize)
         }
-    }, [images]) // Re-run when images are loaded
-
-    const [imageVersion] = useState(Date.now())
+    }, [smoothX, smoothY])
 
     return (
         <motion.section
-            ref={sectionRef}
-            className="relative w-screen min-h-screen pc:h-screen overflow-x-hidden pc:overflow-hidden bg-black flex flex-col"
+            className="relative w-screen h-screen overflow-hidden bg-black flex flex-col"
             initial={{ opacity: 0 }}
-            animate={{ opacity: isLoaded ? 1 : 0 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0, filter: 'blur(20px)' }}
-            transition={{ duration: 1.2, ease: "easeOut" }}
+            transition={{ duration: 0.8 }}
         >
-            {/* Background Canvas - Single instance for all views */}
-            <canvas
-                ref={canvasRef}
-                className="absolute inset-0 z-[1] w-full h-full pointer-events-none"
-            />
+            {/* HEADER NAVIGATION */}
+            <nav className="absolute top-0 left-0 w-full z-[100] flex justify-between items-center px-6 tablet:px-12 py-8 pointer-events-auto">
+                <motion.div
+                    className="font-heading text-neon-yellow text-sm tablet:text-base tracking-[0.3em]"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1, duration: 0.8 }}
+                >
+                    HUMAN SAUCE LAB
+                </motion.div>
 
-            {/* PC VIEW (>= 1200px) */}
-            <div className="hidden pc:flex flex-col w-full h-full relative">
-                <nav className="absolute top-0 left-0 w-full z-[100] flex justify-between items-center px-12 py-8 pointer-events-auto">
-                    <div className="font-heading text-neon-green text-[18px] tracking-[0.3em] uppercase">Protocolo Sauce</div>
-                    <div className="flex items-center gap-6">
-                        <div className="flex items-center gap-4 mr-4 border-r border-white/10 pr-6">
-                            <a href="https://www.instagram.com/humansauce.lab/" target="_blank" rel="noopener noreferrer"
-                                className="group relative p-2 border border-neon-green/30 text-neon-green hover:bg-neon-green hover:text-black transition-all duration-300">
-                                <Instagram size={20} className="relative z-10" />
-                                <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-neon-green opacity-0 group-hover:opacity-100 transition-opacity" />
-                                <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-neon-green opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </a>
-                            <a href="https://www.youtube.com/@HumanSauceLab" target="_blank" rel="noopener noreferrer"
-                                className="group relative p-2 border border-neon-green/30 text-neon-green hover:bg-neon-green hover:text-black transition-all duration-300">
-                                <Youtube size={20} className="relative z-10" />
-                                <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-neon-green opacity-0 group-hover:opacity-100 transition-opacity" />
-                                <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-neon-green opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </a>
-                        </div>
-                        <a href="#" className="font-sans text-xs text-neon-green uppercase tracking-[0.2em] hover:text-white transition-colors">SOBRE</a>
-                        <a href="https://discord.gg/8mdQpd9Y" target="_blank" rel="noopener noreferrer" className="font-sans text-xs bg-neon-yellow text-black px-5 py-1.5 rounded-full font-bold uppercase tracking-[0.1em] hover:bg-white transition-colors">DISCORD</a>
-                    </div>
-                </nav>
+                <motion.div
+                    className="flex items-center gap-8"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.2, duration: 0.8 }}
+                >
+                    <a href="#" className="font-sans text-[10px] tablet:text-xs text-neon-green uppercase tracking-[0.2em] hover:text-white transition-colors">
+                        SOBRE
+                    </a>
+                    <a href="#" className="font-sans text-[10px] tablet:text-xs bg-neon-yellow text-black px-5 py-1.5 rounded-full font-bold uppercase tracking-[0.1em] hover:bg-white transition-colors">
+                        DISCORD
+                    </a>
+                </motion.div>
+            </nav>
 
-                <div className="absolute inset-0 z-[2]">
-                    <motion.div className="absolute inset-[-10%] z-[3] w-[120%] h-[120%]" style={{ x: charX, y: charY }}>
-                        <Image src={`/Hero.png?v=${imageVersion}`} alt="Hero Character" fill className="object-cover pc:scale-105" quality={100} priority />
-                    </motion.div>
-                </div>
-
-                <div className="relative z-50 h-full flex items-center justify-end px-32 pr-[228px] pointer-events-none">
-                    <div className="flex flex-col items-start text-left max-w-[650px] pointer-events-auto">
-                        <h1 className="font-heading text-[77px] leading-[0.9] tracking-tighter text-white uppercase mb-6">DOMINE AS<br />FERRAMENTAS<br /><span className="text-neon-yellow">DO MERCADO ATUAL</span></h1>
-                        <p className="font-sans font-light text-[23px] text-white/90 mb-10 leading-relaxed">Eu te ensino a utilizar as ferramentas de ponta do mercado atual para converter dias de trabalho em minutos de criação e a fatura <span className="font-bold text-neon-green">muito mais</span></p>
-                        <button
-                            onClick={onStart}
-                            className="group relative px-12 py-5 border border-neon-yellow/30 text-neon-yellow font-sans font-black text-[25px] uppercase tracking-[0.1em] hover:bg-neon-yellow hover:text-black hover:border-neon-yellow transition-all duration-500 overflow-hidden animate-shimmer"
-                        >
-                            <span className="relative z-10">SAIBA MAIS</span>
-                            <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-neon-yellow" />
-                            <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-neon-yellow" />
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {/* TABLET VIEW (810px - 1199px) */}
-            <div className="hidden tablet:flex pc:hidden flex-col w-screen h-screen relative bg-black">
-                <nav className="absolute top-0 left-0 w-full z-[100] flex justify-between items-center px-12 py-8">
-                    <div className="font-heading text-neon-green text-[18px] tracking-[0.3em] uppercase">Protocolo Sauce</div>
-                    <div className="flex items-center gap-6">
-                        <div className="flex items-center gap-4 mr-4 border-r border-white/10 pr-6">
-                            <a href="https://www.instagram.com/humansauce.lab/" target="_blank" rel="noopener noreferrer"
-                                className="group relative p-2 border border-neon-green/30 text-neon-green hover:bg-neon-green hover:text-black transition-all duration-300">
-                                <Instagram size={20} className="relative z-10" />
-                                <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-neon-green opacity-0 group-hover:opacity-100 transition-opacity" />
-                                <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-neon-green opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </a>
-                            <a href="https://www.youtube.com/@HumanSauceLab" target="_blank" rel="noopener noreferrer"
-                                className="group relative p-2 border border-neon-green/30 text-neon-green hover:bg-neon-green hover:text-black transition-all duration-300">
-                                <Youtube size={20} className="relative z-10" />
-                                <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-neon-green opacity-0 group-hover:opacity-100 transition-opacity" />
-                                <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-neon-green opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </a>
-                        </div>
-                        <a href="#" className="font-sans text-xs text-neon-green uppercase tracking-[0.2em] hover:text-white transition-colors">SOBRE</a>
-                        <a href="https://discord.gg/8mdQpd9Y" target="_blank" rel="noopener noreferrer" className="font-sans text-xs bg-neon-yellow text-black px-5 py-1.5 rounded-full font-bold uppercase tracking-[0.1em] hover:bg-white transition-colors">DISCORD</a>
-                    </div>
-                </nav>
-
-                <div className="absolute inset-0 z-[2]">
+            {/* PARALLAX CONTAINER */}
+            <div className="absolute inset-0 z-[1] pointer-events-none">
+                {/* Background Image Layer */}
+                <motion.div
+                    className="absolute inset-[-5%] z-[2] w-[110%] h-[110%]"
+                    style={{ x: bgX, y: bgY }}
+                >
                     <Image
-                        src={`/Hero.png?v=${imageVersion}`}
-                        alt="Hero Tablet"
+                        src="/Hero.png"
+                        alt="Human Sauce Lab Background"
                         fill
-                        className="object-cover object-center scale-105"
-                        quality={100}
                         priority
+                        className="object-cover object-left scale-105"
+                        quality={100}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/60" />
-                </div>
+                    <div className="absolute inset-0 bg-black/40" />
+                </motion.div>
 
-                <div className="relative z-20 h-full flex items-center justify-end px-12 pr-20 pointer-events-none">
-                    <div className="flex flex-col items-start text-left max-w-[450px] pointer-events-auto">
-                        <h1 className="font-heading text-6xl leading-[0.9] tracking-tighter text-white uppercase mb-8">
-                            DOMINE AS<br />
-                            FERRAMENTAS DO<br />
-                            <span className="text-neon-yellow">MERCADO ATUAL</span>
-                        </h1>
-                        <p className="font-sans font-light text-lg text-white/90 mb-10 leading-relaxed">
-                            Eu te ensino a utilizar as ferramentas de ponta do mercado para converter dias de trabalho em minutos de criação.
-                        </p>
-                        <button
-                            onClick={onStart}
-                            className="group relative px-10 py-5 border border-neon-yellow/30 text-neon-yellow font-sans font-black text-xl uppercase tracking-widest transition-all duration-500 overflow-hidden hover:bg-neon-yellow hover:text-black animate-shimmer"
-                        >
-                            <span className="relative z-10">SAIBA MAIS</span>
-                            <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-neon-yellow" />
-                            <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-neon-yellow" />
-                        </button>
-                    </div>
-                </div>
+                {/* Particles Layer (Deeper Parallax) */}
+                <motion.canvas
+                    ref={canvasRef}
+                    className="absolute inset-0 z-[5]"
+                    style={{ x: particlesX, y: particlesY }}
+                />
             </div>
 
-            {/* MOBILE VIEW (< 810px) */}
-            <div className="flex tablet:hidden flex-col w-full h-screen bg-black relative overflow-hidden">
-                <div className="relative z-20 w-full h-full px-6 flex flex-col items-center justify-center text-center">
-                    <div className="w-12 h-[2px] bg-neon-green mb-8" />
-                    <h1 className="font-heading text-[52px] leading-[0.85] tracking-tighter text-white uppercase mb-8">
+            {/* Hero Content - Extreme Right Aligned */}
+            <div className="relative z-[50] h-full w-full flex items-center justify-end px-6 tablet:px-12 desktop:px-32 pointer-events-none">
+                <motion.div
+                    className="flex flex-col items-end text-right max-w-[650px] pointer-events-auto"
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
+                >
+                    {/* Heading */}
+                    <h1 className="font-heading text-4xl mobile:text-5xl tablet:text-6xl desktop:text-7xl leading-[0.9] tracking-tighter text-white uppercase mb-6 drop-shadow-[0_0_15px_rgba(0,0,0,0.5)] text-right">
                         DOMINE AS<br />
-                        FERRAMENTAS DO<br />
-                        <span className="text-neon-yellow">MERCADO ATUAL</span>
+                        FERRAMENTAS<br />
+                        <span className="text-neon-yellow whitespace-nowrap">DO MERCADO ATUAL</span>
                     </h1>
-                    <p className="font-sans font-light text-base text-white/70 mb-10 max-w-[320px] leading-relaxed">
-                        Eu te ensino a utilizar as ferramentas de ponta do mercado para converter dias de trabalho em minutos de criação.
+
+                    {/* Subtitle */}
+                    <p className="font-sans font-light text-sm tablet:text-base desktop:text-lg text-white/90 mb-10 max-w-[500px] leading-relaxed text-right">
+                        Eu te ensino a utilizar as ferramentas de ponta do mercado atual para converter dias de trabalho em minutos de criação e a fatura <span className="font-bold text-neon-green">+5k Mês</span>
                     </p>
-                    <button
+
+                    {/* CTA Button */}
+                    <motion.button
                         onClick={onStart}
-                        className="group relative w-full py-6 border border-neon-yellow/30 text-neon-yellow font-sans font-black text-xl uppercase tracking-widest transition-all duration-500 overflow-hidden hover:bg-neon-yellow hover:text-black animate-shimmer"
+                        className="group relative px-12 py-5 bg-[#eceb21] text-black font-sans font-black text-lg tablet:text-xl uppercase tracking-[0.1em] rounded-none hover:shadow-[0_0_40px_rgba(236,235,33,0.5)] transition-all overflow-hidden self-end"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                     >
                         <span className="relative z-10">SAIBA MAIS</span>
-                        <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-neon-yellow" />
-                        <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-neon-yellow" />
-                    </button>
-                    <div className="flex items-center gap-8 mt-10">
-                        <a href="https://www.instagram.com/humansauce.lab/" target="_blank" rel="noopener noreferrer" className="text-neon-green hover:text-white transition-colors">
-                            <Instagram size={28} />
-                        </a>
-                        <a href="https://www.youtube.com/@HumanSauceLab" target="_blank" rel="noopener noreferrer" className="text-neon-green hover:text-white transition-colors">
-                            <Youtube size={28} />
-                        </a>
-                    </div>
-                </div>
+                        {/* Glossy shine effect */}
+                        <motion.div
+                            className="absolute top-0 left-[-100%] w-[50%] h-full bg-white/30 skew-x-[-25deg] z-0"
+                            animate={{ left: ['-100%', '200%'] }}
+                            transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                        />
+                    </motion.button>
+                </motion.div>
             </div>
 
             {/* Decorative scanlines */}
